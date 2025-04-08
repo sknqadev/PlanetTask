@@ -1,0 +1,7 @@
+/allure-report
+/.idea
+/.vscode
+/allure-results
+/allure-results-ui
+/.allure
+/test-results

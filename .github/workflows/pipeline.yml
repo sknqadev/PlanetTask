@@ -1,0 +1,57 @@
+name: Online Banking CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      wiremock:
+        image: wiremock/wiremock:2.35.0
+        ports:
+          - 8080:8080
+        options: >-
+          --health-cmd "curl http://localhost:8080/__admin" 
+          --health-interval 10s 
+          --health-timeout 5s 
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build and run API tests
+        run: mvn -B -pl api-tests test
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install Playwright and run UI tests
+        working-directory: ui-tests
+        run: |
+          npm ci
+          npx playwright install
+          npx playwright test
+
+      - name: Install JMeter and run load tests
+        run: |
+          sudo apt update && sudo apt install -y jmeter
+          jmeter -n -t load-tests/fund-transfer-load.jmx -l results.jtl
+
+      - name: Upload JMeter results
+        uses: actions/upload-artifact@v3
+        with:
+          name: jmeter-results
+          path: results.jtl
