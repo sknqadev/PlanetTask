@@ -1,12 +1,12 @@
 import { test, expect } from '@playwright/test';
-import {TransferPage} from '../pages/transfer.page';
+import { TransferPage } from '../pages/transfer.page';
 
 test.describe('Banking Application', () => {
   let transferPage: TransferPage;
 
   test.beforeEach(async ({ page }) => {
     transferPage = new TransferPage(page);
-    await transferPage.goto()
+    await transferPage.goto();
   });
 
   test('should load the home page', async () => {
