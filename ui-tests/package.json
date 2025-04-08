@@ -9,9 +9,10 @@
     "test:debug": "playwright test --debug"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx}": [
+    "**/*.{js,ts,json,md}": [
+      "prettier --write",
       "eslint --fix",
-      "prettier --write"
+      "git add"
     ]
   },
   "main": "index.js",
@@ -23,13 +24,11 @@
     "@types/node": "^22.14.0",
     "allure-playwright": "^3.2.1",
     "eslint": "^9.24.0",
-    "prettier": "^3.5.3",
-    "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "eslint-config-prettier": "^10.1.1",
-    "eslint-plugin-playwright": "^2.2.0",
     "husky": "^9.1.7",
-    "lint-staged": "^15.5.0"
+    "lint-staged": "^15.5.0",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-playwright": "^2.2.0"
   }
 }
