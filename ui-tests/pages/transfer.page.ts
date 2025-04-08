@@ -22,6 +22,6 @@ export class TransferPage {
     await this.currencySelect.selectOption(currency);
     await this.submitButton.click();
 
-    expect(await this.confirmationMessage.isVisible()).toBeTruthy();
+    await expect(await this.confirmationMessage.isVisible()).toBeTruthy();
   }
 }
