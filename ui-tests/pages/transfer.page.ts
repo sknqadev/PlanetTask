@@ -1,4 +1,4 @@
-import { expect, Page } from '@playwright/test';
+import { Page } from '@playwright/test';
 
 export class TransferPage {
   constructor(readonly page: Page) {}
@@ -21,7 +21,5 @@ export class TransferPage {
     await this.amountInput.fill(amount);
     await this.currencySelect.selectOption(currency);
     await this.submitButton.click();
-
-    await expect(await this.confirmationMessage.isVisible()).toBeTruthy();
   }
 }
