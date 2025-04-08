@@ -12,7 +12,7 @@ import static org.hamcrest.Matchers.*;
 @Epic("Banking")
 @Feature("Account Balance")
 @Story("User retrieves account balance")
-@Owner("davi")
+@Owner("Davi")
 @Severity(SeverityLevel.CRITICAL)
 public class AccountBalanceTests {
 

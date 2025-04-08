@@ -9,12 +9,12 @@ import org.eclipse.jetty.util.resource.Resource;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 public class MockServer {
-    private static WireMockServer wireMockServer;
+    private static WireMockServer wiremockServer;
     private static Server webServer;
 
     public static void main(String[] args) throws Exception {
         if (args.length == 0) {
-            System.out.println("❌ Nenhum comando fornecido. Use 'start' ou 'stop'.");
+            System.out.println("No command found use 'start' or 'stop'.");
             return;
         }
 
@@ -27,40 +27,40 @@ public class MockServer {
                 stopServers();
                 break;
             default:
-                System.out.println("❌ Comando inválido. Use 'start' ou 'stop'.");
+                System.out.println("Invalid command use 'start' or 'stop'.");
         }
     }
 
     public static void startServers() throws Exception {
-        // Inicia o WireMock
-        if (wireMockServer == null || !wireMockServer.isRunning()) {
-            wireMockServer = new WireMockServer(WireMockConfiguration.options().port(8080));
-            wireMockServer.start();
+        // Start Wiremock
+        if (wiremockServer == null || !wiremockServer.isRunning()) {
+            wiremockServer = new WireMockServer(WireMockConfiguration.options().port(8080));
+            wiremockServer.start();
 
-            // Stub para POST /banking/transactions
-            wireMockServer.stubFor(post(urlEqualTo("/transactions"))
+            // Stub for POST /banking/transactions
+            wiremockServer.stubFor(post(urlEqualTo("/transactions"))
                     .willReturn(aResponse()
                             .withHeader("Content-Type", "application/json")
                             .withBody("{ \"transaction_id\": \"TX123456\", \"success\": true, \"new_balance\": 900.0 }")));
 
-            // Stub para GET /banking/transactions/{transaction_id}
-            wireMockServer.stubFor(get(urlPathMatching("/transactions/.*"))
+            // Stub for GET /banking/transactions/{transaction_id}
+            wiremockServer.stubFor(get(urlPathMatching("/transactions/.*"))
                     .willReturn(aResponse()
                             .withHeader("Content-Type", "application/json")
                             .withBody("{ \"transaction_id\": \"TX123456\", \"from_account\": \"123456\", \"to_account\": \"654321\", \"amount\": 100.0, \"currency\": \"USD\", \"status\": \"completed\", \"timestamp\": \"2023-01-01T10:00:00Z\" }")));
 
-            // Stub para GET /banking/accounts/{account_id}/balance
-            wireMockServer.stubFor(get(urlPathMatching("/accounts/.*/balance"))
+            // Stub for GET /banking/accounts/{account_id}/balance
+            wiremockServer.stubFor(get(urlPathMatching("/accounts/.*/balance"))
                     .willReturn(aResponse()
                             .withHeader("Content-Type", "application/json")
                             .withBody("{ \"account_id\": \"123456\", \"balance\": 900.0, \"currency\": \"USD\" }")));
 
-            System.out.println("✅ WireMock iniciado na porta 8080");
+            System.out.println("WireMock started on port 8080");
         } else {
-            System.out.println("⚠️ WireMock já está em execução.");
+            System.out.println("WireMock is already running.");
         }
 
-        // Inicia o Jetty para servir HTML
+        // Start Jetty to serve HTML files
         if (webServer == null || !webServer.isRunning()) {
             webServer = new Server(5500);
             ServletContextHandler context = new ServletContextHandler();
@@ -72,31 +72,35 @@ public class MockServer {
             webServer.setHandler(context);
             webServer.start();
 
-            System.out.println("✅ Jetty iniciado na porta 5500");
+            System.out.println("Jetty started on port 5500");
         } else {
-            System.out.println("⚠️ Jetty já está em execução.");
+            System.out.println("Jetty is already running.");
         }
     }
 
     public static void stopServers() {
-        // Stop WireMock
-        if (wireMockServer != null && wireMockServer.isRunning()) {
-            wireMockServer.stop();
-            System.out.println("✅ WireMock parado.");
+        // Stop Wiremock Server
+        if (wiremockServer != null && wiremockServer.isRunning()) {
+            try {
+                wiremockServer.stop();
+            } catch (Exception e) {
+                System.err.println("Error trying to stop Wiremock: " + e.getMessage());
+            }
+            System.out.println("Wiremock stopped.");
         } else {
-            System.out.println("⚠️ WireMock não está em execução.");
+            System.out.println("Wiremock is not running.");
         }
 
-        // Stop Jetty
+        // Stop Jetty Server
         if (webServer != null && webServer.isRunning()) {
             try {
                 webServer.stop();
-                System.out.println("✅ Jetty parado.");
+                System.out.println("Jetty stopped.");
             } catch (Exception e) {
-                System.err.println("❌ Erro ao parar o Jetty: " + e.getMessage());
+                System.err.println("Error while trying to stop Jetty; " + e.getMessage());
             }
         } else {
-            System.out.println("⚠️ Jetty não está em execução.");
+            System.out.println("Jetty is not running.");
         }
     }
 }

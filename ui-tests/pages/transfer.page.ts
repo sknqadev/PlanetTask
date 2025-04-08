@@ -15,7 +15,22 @@ export class TransferPage {
     await this.page.goto('http://localhost:5500/mock.html');
   }
 
-  async submitTransfer(fromAccount: string, toAccount: string, amount: string, currency: string) {
+  /**
+   * Submits a fund transfer request from one account to another.
+   *
+   * @async
+   * @param {string} fromAccount - The account number to transfer funds from.
+   * @param {string} toAccount - The account number to transfer funds to.
+   * @param {string} amount - The amount of money to transfer.
+   * @param {string} currency - The currency type of the transfer.
+   * @returns {Promise<void>} A promise that resolves when the transfer is submitted.
+   */
+  async submitTransfer(
+    fromAccount: string,
+    toAccount: string,
+    amount: string,
+    currency: string
+  ): Promise<void> {
     await this.fromAccountInput.fill(fromAccount);
     await this.toAccountInput.fill(toAccount);
     await this.amountInput.fill(amount);
