@@ -22,7 +22,7 @@ test.describe('Banking Application', () => {
 
   test('should show error for invalid transfer', async () => {
     await transferPage.submitTransfer('', '', '', 'USD');
-    // await expect(transferPage.confirmationMessage).not.toBeVisible();
-    // await expect(transferPage.transactionId).not.toBeVisible();
+    await expect(transferPage.confirmationMessage).not.toBeVisible();
+    await expect(transferPage.transactionId).not.toBeVisible();
   });
 });
