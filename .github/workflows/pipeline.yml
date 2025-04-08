@@ -22,8 +22,7 @@ jobs:
       - name: Start mock-server
         run: |
           echo "🚀 Starting mock-server..."
-          cd mock-server || exit 1
-          mvn exec:java -Dexec.mainClass="com.example.mock.MockServer" -Dexec.args="start" &
+          mvn -pl mock-server exec:java -D="com.example.mock.MockServer"  -Dexec.args="start" &
           MOCK_PID=$!
           cd ..
           sleep 3
