@@ -5,11 +5,7 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.util.resource.PathResource;
-
-import java.net.URL;
-import java.nio.file.Paths;
-
+import org.eclipse.jetty.util.resource.Resource;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 public class MockServer {
@@ -69,15 +65,8 @@ public class MockServer {
             webServer = new Server(5500);
             ServletContextHandler context = new ServletContextHandler();
 
-            URL staticDir = MockServer.class.getClassLoader().getResource("static");
-            if (staticDir == null) {
-                System.err.println("❌ Pasta 'static' não encontrada.");
-                return;
-            }
-
-            PathResource resource = new PathResource(Paths.get(staticDir.toURI()));
             context.setContextPath("/");
-            context.setBaseResource(resource);
+            context.setBaseResource(Resource.newClassPathResource("/static"));
             context.addServlet(DefaultServlet.class, "/");
 
             webServer.setHandler(context);
