@@ -22,7 +22,9 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/upload-artifact@v4
+        with:
+          path: ''
 
       - name: Set up JDK 17
         uses: actions/setup-java@v3
@@ -51,7 +53,7 @@ jobs:
           jmeter -n -t load-tests/fund-transfer-load.jmx -l results.jtl
 
       - name: Upload JMeter results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: jmeter-results
           path: results.jtl
