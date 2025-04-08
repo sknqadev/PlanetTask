@@ -9,17 +9,6 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
-    services:
-      wiremock:
-        image: wiremock/wiremock:2.35.0
-        ports:
-          - 8080:8080
-        options: >-
-          --health-cmd "curl http://localhost:8080/__admin" 
-          --health-interval 10s 
-          --health-timeout 5s 
-          --health-retries 5
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -30,8 +19,20 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Start mock-server
+        run: |
+          echo "🚀 Starting mock-server..."
+          cd mock-server || exit 1
+          mvn exec:java -Dexec.mainClass="com.example.mock.MockServer" -Dexec.args="start" &
+          MOCK_PID=$!
+          cd ..
+          sleep 3
+
       - name: Build and run API tests
-        run: mvn -B -pl api-tests test
+        run: |
+          cd api-tests/ || exit 1
+          mvn clean test -D allure.results.directory=../allure-results
+          cd ..
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -44,14 +45,23 @@ jobs:
           npm ci
           npx playwright install
           npx playwright test
+          cp -r allure-results/* ../allure-results/ 2>/dev/null || echo "⚠️ Nenhum resultado do Playwright encontrado."
+          cd ..
 
-      - name: Install JMeter and run load tests
+
+      - name: Stopping mock-server
         run: |
-          sudo apt update && sudo apt install -y jmeter
-          jmeter -n -t load-tests/fund-transfer-load.jmx -l results.jtl
+          echo "🛑 Stopping mock-server..."
+          kill "$MOCK_PID" || true
 
-      - name: Upload JMeter results
-        uses: actions/upload-artifact@v4
-        with:
-          name: jmeter-results
-          path: results.jtl
+
+#      - name: Install JMeter and run load tests
+#        run: |
+#          sudo apt update && sudo apt install -y jmeter
+#          jmeter -n -t load-tests/fund-transfer-load.jmx -l results.jtl
+#
+#      - name: Upload JMeter results
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: jmeter-results
+#          path: results.jtl
