@@ -20,7 +20,7 @@ jobs:
           distribution: 'temurin'
           cache: maven  # Cache Maven dependencies for faster builds
       - name: Build project
-        run: mvn clean package
+        run: mvn clean package -DskipTests=true
 
   unit-tests:
     name: Unit Tests
@@ -68,7 +68,7 @@ jobs:
       - name: Run API integration tests
         run: |
           cd api-tests/ || exit 1
-          mvn clean test -D allure.results.directory=../allure-results
+          mvn clean test -D allure.results.directory=../test-results/Allure
           cd ..
 
   performance-tests:
@@ -111,7 +111,7 @@ jobs:
         if: ${{ always() }}       # Always run this step to collect results even if tests fail
         with:
           name: allure-results
-          path: ui-tests/allure-results
+          path: /test-results/allure-results
 
   teardown-qa:
     name: Teardown QA Environment
