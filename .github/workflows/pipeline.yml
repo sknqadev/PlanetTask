@@ -103,8 +103,8 @@ jobs:
       - name: Run Performance Tests
         run: |
           jmeter -n \
-          -t my_test.jmx -l \
-          log.jtl 
+          -t load-tests/fund-transfer-load.jmx \
+          -l results.jtl 
 
       - name: Run E2E Tests
         run: |
