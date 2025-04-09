@@ -104,7 +104,7 @@ jobs:
         run: |
           pushd apache-jmeter-5.5/bin/ && ./jmeter.sh  -n \
           -t ../../load-tests/fund-transfer-load.jmx \
-          -l results.xml 
+          -l ../test-results/Allure/loadTestResults.xml 
 
       - name: Run E2E Tests
         run: |
@@ -118,9 +118,9 @@ jobs:
           echo "🛑 Stopping mock-server..."
           kill $(cat mock_pid) || true
 
-      - name: Convert JMeter results to Allure format
-        run: |
-          allure generate load-tests/results.xml -o test-results/Allure/Performance
+#      - name: Convert JMeter results to Allure format
+#        run: |
+#          allure generate load-tests/results.xml -o test-results/Allure/Performance
 
       - name: Load test report history
         uses: actions/checkout@v4
