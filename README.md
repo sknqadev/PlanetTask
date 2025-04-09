@@ -46,19 +46,20 @@ cd PlanetTask
 
 ### 2. Install Requirements
 - Java 23+
-- Maven
+- Maven (correctly configured on PATH and MAVEN_HOME)
 - Node.js 20+
-- Allure CLI
-- Playwright browsers:
-  ```bash
-  cd ui-tests
-  npm ci
-  npx playwright install
-  ```
+- Bash Terminal (as the script is .sh)
 
-### 3. Local Test Run
+### 3. Install Locally
 ```bash
-chmod +x run-all-tests.sh
+mvn clean install
+cd /ui-tests/
+npm install
+npx playwright install
+```
+
+### 4. Local run
+```bash
 ./run-all-tests.sh
 ```
 This will:
@@ -66,6 +67,13 @@ This will:
 - Run API + UI tests
 - Generate an Allure report
 - Stop the server afterwards
+
+### 5. Run on CI/CD
+- On your repo:
+- Create a new branch "gh-pages"
+- open Settings > Actions > Workflow Permissions > enable Read and write permissions
+- goto Pages > Select branch: gh-pages > / root folder
+- Trigger the pipeline on "Actions" either by pushing something to the code (I suggest changing anything on readme.md)
 
 ---
 
