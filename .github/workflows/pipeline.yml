@@ -102,9 +102,10 @@ jobs:
       - name: Run Performance Tests
         run: |
           jmeter -n \
-            -t load-tests/fund-transfer-load.jmx \
-            -l load-tests/results.jtl \
-            -j load-tests/jmeter.log
+          -Dxstream.allowlist.enable=false \
+          -t load-tests/fund-transfer-load.jmx \
+          -l load-tests/results.jtl \
+          -j load-tests/jmeter.log
 
       - name: Run E2E Tests
         run: |
