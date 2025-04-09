@@ -104,6 +104,7 @@ Located in `ui-tests/`, built with **Playwright + TypeScript**:
 - Follows the Fund Transfer flow
 - Parameterized and assertion-rich
 - Uses modern Playwright practices and fixtures
+- Uses Page Object Model for the sake of demonstration
 
 ---
 
@@ -139,6 +140,12 @@ View the latest test report at:
 ```
 https://<your-username>.github.io/PlanetTask/
 ```
+
+---
+
+## 📜 Example of Allure Report with history
+![image](https://github.com/user-attachments/assets/685bc644-461d-482b-a67e-2009d6f73a37)
+
 
 ---
 
