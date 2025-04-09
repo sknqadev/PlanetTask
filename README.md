@@ -144,6 +144,6 @@ https://<your-username>.github.io/PlanetTask/
 
 ## 🧑‍💻 Author
 
-- Created by [@sknqadev](https://github.com/sknqadev)
-- QA Automation Engineer | E2E | Performance Testing
+- Created by Davi Travaglia | [@sknqadev](https://github.com/sknqadev)
+- QA Automation Engineer | E2E | API | Performance Testing
 
