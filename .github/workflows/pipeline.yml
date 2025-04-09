@@ -120,7 +120,7 @@ jobs:
 
       - name: Convert JMeter results to Allure format
         run: |
-          allure generate load-tests/results.xml -o test-results/Allure
+          allure generate load-tests/results.xml -o test-results/Allure/Performance
 
       - name: Load test report history
         uses: actions/checkout@v4
