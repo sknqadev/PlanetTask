@@ -154,6 +154,8 @@ https://<your-username>.github.io/PlanetTask/
 ## 📜 Example of Allure Report with history
 ![image](https://github.com/user-attachments/assets/685bc644-461d-482b-a67e-2009d6f73a37)
 
+[@Allure Page Results](https://sknqadev.github.io/PlanetTask/)
+
 
 ---
 
