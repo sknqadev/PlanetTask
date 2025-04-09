@@ -103,7 +103,7 @@ jobs:
       - name: Run Performance Tests
         run: |
           pushd apache-jmeter-5.5/bin/ && ./jmeter.sh  -n \
-          -t load-tests/fund-transfer-load.jmx \
+          -t ../../load-tests/fund-transfer-load.jmx \
           -l results.jtl 
 
       - name: Run E2E Tests
