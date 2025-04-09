@@ -75,6 +75,7 @@ jobs:
         run: |
           cd ui-tests
           npm ci
+          npx playwright install-deps
           npx playwright install
 
       - name: Download mock-server JAR
@@ -102,10 +103,11 @@ jobs:
       - name: Run Performance Tests
         run: |
           jmeter -n \
-          -Dxstream.allowlist.enable=false \
-          -t load-tests/fund-transfer-load.jmx \
-          -l load-tests/results.jtl \
-          -j load-tests/jmeter.log
+            -Dxstream.allowlist.enable=true \
+            -Dxstream.whitelist=org.apache.jmeter.save.ScriptWrapper \
+            -t load-tests/fund-transfer-load.jmx \
+            -l load-tests/results.jtl \
+            -j load-tests/jmeter.log
 
       - name: Run E2E Tests
         run: |
