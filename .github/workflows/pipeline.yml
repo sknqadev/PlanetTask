@@ -13,14 +13,24 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Simulated build step
+        run: echo "🧱 Build step placeholder"
+
       - name: Set up JDK 23
         uses: actions/setup-java@v3
         with:
           java-version: '23'
           distribution: 'temurin'
-          cache: maven  # Cache Maven dependencies for faster builds
-      - name: Build project
-        run: mvn clean package -DskipTests=true
+          cache: maven
+
+      - name: Build and upload mock-server
+        run: mvn clean package -pl mock-server -am -DskipTests=true
+      - name: Upload mock-server JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: mock-server-jar
+          path: mock-server/target/mock-server-1.0-SNAPSHOT-jar-with-dependencies.jar
 
   unit-tests:
     name: Unit Tests
@@ -30,103 +40,116 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Run unit tests
-        run: echo "Unit tests passed"
+        run: echo "✅ Unit tests passed"
 
-  staging:
-    name: Staging
+  integration-tests:
+    name: Integration Tests (API)
     runs-on: ubuntu-latest
     needs: unit-tests
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Start QA environment
-        run: echo "QA environment is up and running"
 
-  deploy-qa:
-    name: QA Deployment
-    runs-on: ubuntu-latest
-    needs: staging
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Deploy application to QA environment
+      - name: Set up JDK 23
+        uses: actions/setup-java@v3
+        with:
+          java-version: '23'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Download mock-server JAR
+        uses: actions/download-artifact@v4
+        with:
+          name: mock-server-jar
+          path: mock-server/target
+
+      - name: Start mock-server
         run: |
           echo "🚀 Starting mock-server..."
-          cd mock-server
-          java -jar target/mock-server-1.0-SNAPSHOT-jar-with-dependencies.jar start &
-          MOCK_PID=$!
-          cd ..
+          java -jar mock-server/target/mock-server-1.0-SNAPSHOT-jar-with-dependencies.jar &
+          echo $! > mock_pid
           sleep 3
 
-  integration-tests:
-    name: Integration Tests (API)
-    runs-on: ubuntu-latest
-    needs: deploy-qa
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
       - name: Run API integration tests
         run: |
-          cd api-tests/ || exit 1
+          cd api-tests || exit 1
           mvn clean test -D allure.results.directory=../test-results/Allure
           cd ..
+
+      - name: Stop mock-server
+        if: always()
+        run: |
+          echo "🛑 Stopping mock-server..."
+          kill $(cat mock_pid) || true
 
   performance-tests:
     name: Performance Tests
     runs-on: ubuntu-latest
-    needs: deploy-qa
+    needs: unit-tests
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Run performance tests
-        run: echo "Performance tests passed"
+        run: echo "🚀 Performance tests passed"
 
   e2e-tests:
     name: End-to-End Tests (UI)
     runs-on: ubuntu-latest
-    needs: deploy-qa
+    needs: unit-tests
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Set up Node.js 20 (Cache npm deps)
+
+      - name: Set up Node.js 20
         uses: actions/setup-node@v3
         with:
           node-version: '20'
-          cache: npm              # Cache npm dependencies
+          cache: npm
           cache-dependency-path: 'ui-tests/package-lock.json'
-      - name: Install UI test dependencies
+
+      - name: Install UI dependencies
         run: |
-          cd ui-tests/
+          cd ui-tests
           npm ci
           npx playwright install
 
+      - name: Download mock-server JAR
+        uses: actions/download-artifact@v4
+        with:
+          name: mock-server-jar
+          path: mock-server/target
+
+      - name: Start mock-server
+        run: |
+          echo "🚀 Starting mock-server..."
+          java -jar mock-server/target/mock-server-1.0-SNAPSHOT-jar-with-dependencies.jar &
+          echo $! > mock_pid
+          sleep 3
+
       - name: Run Playwright UI tests
         run: |
+          cd ui-tests
           npx playwright test
           cd ..
+
       - name: Archive Allure results
         uses: actions/upload-artifact@v4
-        if: ${{ always() }}       # Always run this step to collect results even if tests fail
+        if: always()
         with:
           name: allure-results
           path: /test-results/allure-results
 
-  teardown-qa:
-    name: Teardown QA Environment
-    runs-on: ubuntu-latest
-    needs: [unit-tests, integration-tests, performance-tests, e2e-tests]
-    if: ${{ always() }}  # Always run teardown to stop QA environment, even if prior jobs failed
-    steps:
-      - name: Shutdown QA environment
+      - name: Stop mock-server
+        if: always()
         run: |
           echo "🛑 Stopping mock-server..."
-          kill "$MOCK_PID" || true
+          kill $(cat mock_pid) || true
 
   deploy-prod:
     name: Deploy to Production
     runs-on: ubuntu-latest
     needs: [unit-tests, integration-tests, performance-tests, e2e-tests]
-    if: ${{ github.ref == 'refs/heads/main' }}  # Only run in main branch push (not on PRs)
+    if: ${{ github.ref == 'refs/heads/main' }}
     steps:
       - name: Deploy application to Production
-        run: echo "Production deployment completed"
+        run: echo "🚀 Production deployment completed"
