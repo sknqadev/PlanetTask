@@ -1,0 +1,6 @@
+"Epic","Feature","Story","FAILED","BROKEN","PASSED","SKIPPED","UNKNOWN"
+"","","","0","0","3","0","0"
+"Banking","Fund Transfer","User performs multiple fund transfers","0","0","4","0","0"
+"Banking","Account Balance","User retrieves account balance","0","0","1","0","0"
+"Banking","Fund Transfer","User initiates a valid fund transfer","0","0","1","0","0"
+"Banking","Transaction Details","User retrieves a specific transaction","0","0","1","0","0"
